@@ -54,5 +54,6 @@ require (
 	github.com/rancher/rancher v0.0.0-20220225023242-635286172d41
 	github.com/sirupsen/logrus v1.8.1
 	github.com/urfave/cli v1.22.2
+	k8s.io/apimachinery v0.22.3
 	rsc.io/letsencrypt v0.0.3 // indirect
 )
