@@ -9,11 +9,9 @@ import (
 	"github.com/rancher/kube-api-auth/pkg/service/controllers"
 	"github.com/rancher/kube-api-auth/pkg/service/handlers"
 	"github.com/rancher/norman/pkg/kwrapper/k8s"
-	clusterv3 "github.com/rancher/rancher/pkg/generated/norman/cluster.cattle.io/v3"
 	"github.com/rancher/rancher/pkg/types/config"
 	"github.com/rancher/rancher/pkg/wrangler"
 	log "github.com/sirupsen/logrus"
-	"k8s.io/apimachinery/pkg/runtime"
 )
 
 func Serve(listen, namespace, kubeConfig string) error {
@@ -40,12 +38,7 @@ func Serve(listen, namespace, kubeConfig string) error {
 	if err != nil {
 		return err
 	}
-	apiContext.Cluster.ClusterAuthTokens(namespace).AddHandler(context.TODO(), "activate_handler", func(key string, obj *clusterv3.ClusterAuthToken) (runtime.Object, error) {
-		return obj, nil
-	})
-	apiContext.Cluster.ClusterUserAttributes(namespace).AddHandler(context.TODO(), "activate_handler", func(key string, obj *clusterv3.ClusterUserAttribute) (runtime.Object, error) {
-		return obj, nil
-	})
+	router := RouteContext(mux.NewRouter().StrictSlash(true), namespace, apiContext)
 
 	go func() {
 		for {
@@ -58,7 +51,6 @@ func Serve(listen, namespace, kubeConfig string) error {
 		}
 	}()
 
-	router := RouteContext(mux.NewRouter().StrictSlash(true), namespace, apiContext)
 	return http.ListenAndServe(listen, router)
 }
 
